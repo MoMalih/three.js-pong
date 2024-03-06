@@ -55,12 +55,12 @@ function createScene()
         planeQuality = 10;
     
     //creat materials
-    var paddle1Material = new THREE.meshLambertMaterial({color: 0xFF0000});
-    var paddle2Material = new THREE.meshLambertMaterial({color: 0x000000});
-    var planeMaterial = new THREE.meshLambertMaterial({color: 0x4BD121});
-    var tableMaterial = new THREE.meshLambertMaterial({color: 0x1B32C0});
-    var pillarMaterial = new THREE.meshLambertMaterial({color: 0x534d0d});
-    var groundMaterial = new THREE.meshLambertMaterial({color: 0x888888});
+    var paddle1Material = new THREE.MeshLambertMaterial({color: 0xFF0000});
+    var paddle2Material = new THREE.MeshLambertMaterial({color: 0x000000});
+    var planeMaterial = new THREE.MeshLambertMaterial({color: 0x4BD121});
+    var tableMaterial = new THREE.MeshLambertMaterial({color: 0x1B32C0});
+    var pillarMaterial = new THREE.MeshLambertMaterial({color: 0x534d0d});
+    var groundMaterial = new THREE.MeshLambertMaterial({color: 0x888888});
 
     //plane
     var plane = new THREE.Mesh(
@@ -95,7 +95,7 @@ function createScene()
     var sphereMaterial = new THREE.MeshLambertMaterial({color: 0xD43001});
 
     ball = new THREE.Mesh(
-        new THREE.sphereGeometry(radius, segments, rings),
+        new THREE.SphereGeometry(radius, segments, rings),
         sphereMaterial);
     scene.add(ball);
     ball.position.x = 0;
@@ -119,8 +119,11 @@ function createScene()
             paddleQuality,
             paddleQuality),
         paddle1Material);
+    scene.add(paddle1);
+    paddle1.recieveShadow = true;
+    paddle1.castShadow = true;
 
-    paddle1 = new THREE.Mesh(
+    paddle2 = new THREE.Mesh(
         new THREE.CubeGeometry(
             paddleWidth,
             paddleHeight,
@@ -129,11 +132,8 @@ function createScene()
             paddleQuality,
             paddleQuality),
         paddle2Material);
-
-        scene.add(paddle1);
+        
         scene.add(paddle2);
-        paddle1.recieveShadow = true;
-        paddle1.castShadow = true;
         paddle2.castShadow = true;
         paddle2.recieveShadow = true;
 
@@ -268,10 +268,134 @@ function player1PaddleMovement()
     paddle1.position.y += paddle1Y;
 }
 
+function player2PaddleMovement() {
+    if (Key.isDown(key.LEFT_ARROW)) {
+        if (paddle2.position.y < fieldHeight * 0.45) {
+            paddle2Y = paddleSpeed * 0.5;
+        } else {
+            paddle2Y = 0;
+            paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
+        }
+    } else if (Key.isDown(key.RIGHT_ARROW)) {
+        if (paddle2.position.y > -fieldHeight * 0.45) {
+            paddle2Y = -paddleSpeed * 0.5;
+        } else {
+            paddle2Y = 0;
+            paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
+        }
+    } else {
+        paddle2Y = 0;
+    }
 
+    paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
+    paddle2.scale.z += (1 - paddle2.scale.z) * 0.2;
+    paddle2.position.y += paddle2Y;
+}
+
+function cameraPhysics()
+{
+    spotLight.position.x = ball.position.x * 2;
+    spotLight.position.y = ball.position.y * 2;
+
+    camera.position.x = paddle1.position.x - 100;
+    camera.position.y += (paddle1.position.y - camera.position.y) * 0.05;
+    camera.position.z = paddle1.position.z + 100 + 0.04 * (-ball.position.x + paddle1.position.x);
+
+    camera.rotation.z = -0.01 * ball.position.y * Math.PI/180;
+    camera.rotation.y = -60 * Math.PI/180;
+    camera.rotation.x = -90 * Math.PI/180;
+}
+
+function resetBall(loser)
+{
+    ball.position.x = 0;
+    ball.position.y = 0;
+
+    if (loser == 1)
+    {
+        ballX = -1;
+    }
+    else
+    {
+        ballX = 1;
+    }
+    ballY = 1;
+}
+
+var bounceTime = 0;
+
+function matchScoreCheck()
+{
+    if (score1 >= maxScore)
+    {
+        ballSpeed = 0;
+        document.getElementById("scores").innerHTML = "Player wins!";
+        document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
+        bounceTime++;
+        paddle1.position.z = Math.sin(bounceTime * 0.1) * 10;
+
+        paddle1.scale.z = 2 + Math.abs(Math.sin(bounceTime * 0.1)) * 10;
+        paddle1.scale.y = 2 + Math.abs(Math.sin(bounceTime * 0.05)) * 10;
+    }
+    else if (score2 >= maxScore)
+    {
+        ballSpeed = 0;
+        document.getElementById("scores").innerHTML = "SPU wins!";
+        document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
+        bounceTime++;
+        paddle2.position.z = Math.sin(bounceTime * 0.1) * 10;
+        paddle2.scale.y = 2 + Math.abs
+    }
+}
+
+function paddlePhysics()
+{
+    if (ball.position.x <= paddle1.position.x + paddleWidth 
+        && ball.position.x >= paddle1.position.x)
+        {
+            if (ball.position.y <= paddle1.position.y + paddleHeight/2
+                && ball.position.y >= paddle1.position.y - paddleHeight/2)
+            {
+                if (ballX < 0)
+                {
+                    paddle1.scale.y = 15;
+                    ballX = -ballX;
+                    ballY -= paddle1Y * 0.7;
+                }
+            }
+        }
+    /*
+    // if ball is aligned with paddle2 on x plane
+    // remember the position is the CENTER of the object
+    // we only check between the front and the middle of the paddle (one-way collision)
+    if (ball.position.x <= paddle2.position.x + paddleWidth
+        && ball.position.x >= paddle2.position.x) {
+        // and if ball is aligned with paddle2 on y plane
+        if (ball.position.y <= paddle2.position.y + paddleHeight / 2
+            && ball.position.y >= paddle2.position.y - paddleHeight / 2) {
+            // and if ball is travelling towards opponent (+ve direction)
+            if (ballDirX > 0) {
+                // stretch the paddle to indicate a hit
+                paddle2.scale.y = 15;
+                // switch direction of ball travel to create bounce
+                ballDirX = -ballDirX;
+                // we impact ball angle when hitting it
+                // this is not realistic physics, just spices up the gameplay
+                // allows you to 'slice' the ball to beat the opponent
+                ballDirY -= paddle2DirY * 0.7;
+            }
+        }
+    }*/
+}
 
 function draw()
 {
     renderer.render(scene, camera);
     requestAnimationFrame(draw);
+
+    ballPhysics();
+    player1PaddleMovement();
+    player2PaddleMovement();
+    paddlePhysics();
+    cameraPhysics();
 }
