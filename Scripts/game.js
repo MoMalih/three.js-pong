@@ -88,19 +88,20 @@ function createScene()
 	var paddle1Material =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0x1B32C0
+		  color: 0x000000
 		});
 	// create the paddle2's material
 	var paddle2Material =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0xFF4045
+		  color: 0xFF0000
 		});
 	// create the plane's material	
 	var planeMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0x4BD121
+            color: 0x1B32C0
+		  //color: 0x4BD121
 		});
 	// create the table's material
 	var tableMaterial =
@@ -118,7 +119,7 @@ function createScene()
 	var groundMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0x888888
+		  color: 0x349D06
 		});
 		
 		
@@ -161,7 +162,7 @@ function createScene()
 	var sphereMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0xD43001
+		  color: 0xF29432
 		});
 		
 	// Create a ball with sphere geometry
