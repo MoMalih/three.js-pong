@@ -1,5 +1,10 @@
-window.addEventListener('keyup', function (event) {Key.onkeyup(event);}, false);
-window.addEventListener('keydown', function(event) {key.onKeydown(event);}, false);
+window.addEventListener('keyup', function (event) {
+    Key.onKeyup(event);
+}, false);
+
+window.addEventListener('keydown', function (event) {
+    Key.onKeydown(event);
+}, false);
 
 var Key = {
     _pressed: {},
@@ -12,13 +17,13 @@ var Key = {
     DOWN: 40,
     LEFT: 37,
     RIGHT: 39,
-    isDown: function(keyCode) {
+    isDown: function (keyCode) {
         return this._pressed[keyCode];
     },
-    onKeydown: function(event) {
+    onKeydown: function (event) {
         this._pressed[event.keyCode] = true;
     },
-    onKeyup: function(event) {
+    onKeyup: function (event) {
         delete this._pressed[event.keyCode];
     }
 };
