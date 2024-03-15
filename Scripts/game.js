@@ -334,7 +334,7 @@ function draw()
 	paddlePhysics();
 	cameraPhysics();
 	playerPaddleMovement();
-	opponentPaddleMovement();
+	//opponentPaddleMovement();
 }
 
 function ballPhysics()
@@ -392,7 +392,7 @@ function ballPhysics()
 }
 
 // Handles CPU paddle movement and logic
-function opponentPaddleMovement()
+/*function opponentPaddleMovement()
 {
 	// Lerp towards the ball on the y plane
 	paddle2DirY = (ball.position.y - paddle2.position.y) * difficulty;
@@ -422,7 +422,7 @@ function opponentPaddleMovement()
 	// by doing this here, we ensure paddle always comes back to default size
 	paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;	
 }
-
+*/
 
 // Handles player's paddle movement
 function playerPaddleMovement()
@@ -467,10 +467,34 @@ function playerPaddleMovement()
 		// stop the paddle
 		paddle1DirY = 0;
 	}
+	if (Key.isDown(Key.LEFT)) {
+        // Move paddle2 up
+        if (paddle2.position.y < fieldHeight * 0.45) {
+            paddle2DirY = paddleSpeed * 0.5;
+        } else {
+            paddle2DirY = 0;
+            paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
+        }
+    } else if (Key.isDown(Key.RIGHT)) {
+        // Move paddle2 down
+        if (paddle2.position.y > -fieldHeight * 0.45) {
+            paddle2DirY = -paddleSpeed * 0.5;
+        } else {
+            paddle2DirY = 0;
+            paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
+        }
+    } else {
+        // Stop paddle2
+        paddle2DirY = 0;
+    }
 	
 	paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;	
 	paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;	
 	paddle1.position.y += paddle1DirY;
+
+	paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
+    paddle2.scale.z += (1 - paddle2.scale.z) * 0.2;
+    paddle2.position.y += paddle2DirY;
 }
 
 // Handles camera and lighting logic
